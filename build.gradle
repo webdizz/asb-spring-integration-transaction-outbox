@@ -1,0 +1,31 @@
+plugins {
+    id 'org.springframework.boot' version '2.4.4'
+    id 'io.spring.dependency-management' version '1.0.11.RELEASE'
+    id 'java'
+}
+
+group = 'com.example'
+version = '0.0.1-SNAPSHOT'
+sourceCompatibility = '11'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    implementation 'org.springframework.boot:spring-boot-starter-integration'
+
+    implementation 'org.springframework.boot:spring-boot-starter-jdbc'
+    implementation 'org.springframework.integration:spring-integration-jdbc'
+    runtimeOnly 'mysql:mysql-connector-java'
+
+    implementation 'org.amqphub.spring:amqp-10-jms-spring-boot-starter:2.4.2'
+    implementation 'org.springframework.integration:spring-integration-amqp'
+
+    testImplementation 'org.springframework.boot:spring-boot-starter-test'
+    testImplementation 'org.springframework.integration:spring-integration-test'
+}
+
+test {
+    useJUnitPlatform()
+}
