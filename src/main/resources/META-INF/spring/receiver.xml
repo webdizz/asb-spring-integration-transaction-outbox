@@ -11,26 +11,43 @@
 			http://www.springframework.org/schema/integration/jms
             http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
 
+    <!--    first consumer for one of the groups-->
     <int:channel id="inbound"/>
 
-    <beans:bean id="inbound.queue" class="org.apache.qpid.jms.JmsQueue">
-        <beans:constructor-arg>
-            <beans:value>orders</beans:value>
-        </beans:constructor-arg>
-    </beans:bean>
-
-    <int-jms:message-driven-channel-adapter id="azureCcv2MessageChannelAdapter"
+    <int-jms:message-driven-channel-adapter id="inboundMessageChannelAdapter"
                                             channel="inbound"
-                                            destination="inbound.queue"
+                                            destination="inboundQueue"
                                             pub-sub-domain="false"
                                             connection-factory="connectionFactory"
-                                            concurrent-consumers="2"
+                                            concurrent-consumers="1"
                                             idle-task-execution-limit="3"
                                             acknowledge="auto"
     />
 
     <int:chain input-channel="inbound">
+        <int:header-enricher>
+            <int:header name="ConsumerID" value="1"/>
+        </int:header-enricher>
         <int:service-activator ref="messageTracer" method="printMetaData"/>
     </int:chain>
 
+
+    <int:channel id="inbound2"/>
+
+    <int-jms:message-driven-channel-adapter id="inboundMessageChannelAdapter2"
+                                            channel="inbound2"
+                                            destination="inboundQueue"
+                                            pub-sub-domain="false"
+                                            connection-factory="connectionFactory"
+                                            concurrent-consumers="1"
+                                            idle-task-execution-limit="3"
+                                            acknowledge="auto"
+    />
+
+    <int:chain input-channel="inbound2">
+        <int:header-enricher>
+            <int:header name="ConsumerID" value="2"/>
+        </int:header-enricher>
+        <int:service-activator ref="messageTracer" method="printMetaData"/>
+    </int:chain>
 </beans:beans>

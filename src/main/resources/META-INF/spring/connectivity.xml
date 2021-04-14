@@ -8,7 +8,13 @@
           lazy-init="false"
           class="org.apache.qpid.jms.JmsConnectionFactory">
         <property name="remoteURI" value="amqp://0.0.0.0:5672"/>
-        <property name="clientIDPrefix" value="someclient"/>
+        <property name="clientIDPrefix" value="SFS-"/>
+    </bean>
+
+    <bean id="inboundQueue" class="org.apache.qpid.jms.JmsQueue">
+        <constructor-arg>
+            <value>orders</value>
+        </constructor-arg>
     </bean>
 
 </beans>
