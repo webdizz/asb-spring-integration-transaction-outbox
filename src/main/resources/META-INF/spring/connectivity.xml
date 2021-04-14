@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
+">
+
+    <bean id="connectionFactory"
+          lazy-init="false"
+          class="org.apache.qpid.jms.JmsConnectionFactory">
+        <property name="remoteURI" value="amqp://0.0.0.0:5672"/>
+        <property name="clientIDPrefix" value="someclient"/>
+    </bean>
+
+</beans>

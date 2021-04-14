@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:int="http://www.springframework.org/schema/integration"
+             xmlns:int-jms="http://www.springframework.org/schema/integration/jms"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans
+			https://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/integration
+			https://www.springframework.org/schema/integration/spring-integration.xsd
+			http://www.springframework.org/schema/integration/jms
+            http://www.springframework.org/schema/integration/jms/spring-integration-jms.xsd">
+
+    <int:channel id="inbound"/>
+
+    <beans:bean id="inbound.queue" class="org.apache.qpid.jms.JmsQueue">
+        <beans:constructor-arg>
+            <beans:value>orders</beans:value>
+        </beans:constructor-arg>
+    </beans:bean>
+
+    <int-jms:message-driven-channel-adapter id="azureCcv2MessageChannelAdapter"
+                                            channel="inbound"
+                                            destination="inbound.queue"
+                                            pub-sub-domain="false"
+                                            connection-factory="connectionFactory"
+                                            concurrent-consumers="2"
+                                            idle-task-execution-limit="3"
+                                            acknowledge="auto"
+    />
+
+    <int:chain input-channel="inbound">
+        <int:service-activator ref="messageTracer" method="printMetaData"/>
+    </int:chain>
+
+</beans:beans>
