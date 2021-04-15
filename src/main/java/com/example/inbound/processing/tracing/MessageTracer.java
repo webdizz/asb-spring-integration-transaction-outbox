@@ -13,6 +13,6 @@ public class MessageTracer {
         MessageHeaders headers = message.getHeaders();
         String sessionID = String.valueOf(headers.get("SessionID"));
         String consumerId = String.valueOf(headers.get("ConsumerID"));
-        log.info("=== Received a message={} for sessionId={} consumed={}", message.getPayload(), sessionID, consumerId);
+        log.info("=== Received a message={} for sessionId={} consumerId={}", message.getPayload(), sessionID, consumerId);
     }
 }

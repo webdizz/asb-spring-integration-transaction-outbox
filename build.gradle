@@ -12,6 +12,10 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    set('azureVersion', "3.3.0")
+}
+
 dependencies {
     implementation 'org.springframework.boot:spring-boot-starter-web'
     implementation 'org.springframework.boot:spring-boot-starter-integration'
@@ -26,6 +30,8 @@ dependencies {
     implementation 'org.apache.qpid:proton-j:0.33.8'
     implementation 'org.apache.qpid:qpid-jms-client:0.56.0'
 
+    implementation 'com.azure:azure-messaging-servicebus:7.2.0'
+
     compileOnly 'org.projectlombok:lombok'
     annotationProcessor 'org.projectlombok:lombok'
 
@@ -35,4 +41,10 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+dependencyManagement {
+    imports {
+        mavenBom "com.azure.spring:azure-spring-boot-bom:${azureVersion}"
+    }
 }
