@@ -1,10 +1,10 @@
 package com.example.inbound.processing.endpoint;
 
 import com.azure.core.util.IterableStream;
-import com.azure.messaging.servicebus.ServiceBusMessage;
 import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
 import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import com.azure.messaging.servicebus.ServiceBusSessionReceiverClient;
+import com.example.inbound.processing.domain.BusinessMessage;
 import lombok.extern.slf4j.Slf4j;
 import org.apache.qpid.jms.JmsConnectionFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -15,12 +15,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
-import javax.jms.Connection;
 import javax.jms.Destination;
-import javax.jms.JMSException;
-import javax.jms.Message;
-import javax.jms.MessageProducer;
-import javax.jms.Session;
 import java.util.UUID;
 
 @RestController
@@ -31,7 +26,6 @@ public class MessageSendingResource {
 
     private JmsConnectionFactory jmsConnectionFactory;
 
-    @Qualifier("inboundQueue")
     private Destination destination;
 
     @Autowired
@@ -40,7 +34,10 @@ public class MessageSendingResource {
     @Autowired
     private ServiceBusSessionReceiverClient serviceBusReceiverClient;
 
-    public MessageSendingResource(JmsConnectionFactory jmsConnectionFactory, Destination destination) {
+    @Autowired
+    private SenderGateway gateway;
+
+    public MessageSendingResource(@Qualifier("connectionFactory") JmsConnectionFactory jmsConnectionFactory, @Qualifier("inboundQueue") Destination destination) {
         this.jmsConnectionFactory = jmsConnectionFactory;
         this.destination = destination;
     }
@@ -48,23 +45,14 @@ public class MessageSendingResource {
     @PostMapping("/send")
     public String send(@RequestParam("s") String sessionId) {
         String messageBody = UUID.randomUUID().toString();
-        try (Connection connection = jmsConnectionFactory.createConnection()) {
-            Session session = connection.createSession(false, Session.CLIENT_ACKNOWLEDGE);
-            MessageProducer producer = session.createProducer(destination);
-            Message message = session.createTextMessage(messageBody);
-            message.setStringProperty("SessionID", sessionId);
-            message.setStringProperty("SessionId", sessionId);
-            message.setStringProperty("JMSXGroupID", sessionId);
-            message.setStringProperty("GroupId", sessionId);
-            producer.send(message);
+        BusinessMessage message = new BusinessMessage();
+        message.setBody(messageBody);
+        message.setSessionId(sessionId);
+        gateway.send(message);
 
-            ServiceBusMessage serviceBusMessage = new ServiceBusMessage(messageBody);
-            serviceBusMessage.setSessionId(sessionId);
-            serviceBusSenderClient.sendMessage(serviceBusMessage);
-
-        } catch (JMSException e) {
-            log.error("Unable to send message", e);
-        }
+//        ServiceBusMessage serviceBusMessage = new ServiceBusMessage(messageBody);
+//        serviceBusMessage.setSessionId(sessionId);
+//        serviceBusSenderClient.sendMessage(serviceBusMessage);
 
         return "Message was sent: " + messageBody;
     }

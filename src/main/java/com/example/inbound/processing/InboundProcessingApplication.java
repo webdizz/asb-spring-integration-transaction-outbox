@@ -7,7 +7,11 @@ import org.springframework.integration.config.EnableIntegration;
 
 @SpringBootApplication
 @EnableIntegration
-@ImportResource({"classpath:META-INF/spring/receiver.xml", "classpath:META-INF/spring/connectivity.xml"})
+@ImportResource({
+        "classpath:META-INF/spring/receiver.xml",
+        "classpath:META-INF/spring/connectivity.xml",
+        "classpath:META-INF/spring/sender.xml"
+})
 public class InboundProcessingApplication {
 
     public static void main(String[] args) {

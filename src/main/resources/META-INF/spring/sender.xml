@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans:beans xmlns="http://www.springframework.org/schema/integration"
+             xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+             xmlns:beans="http://www.springframework.org/schema/beans"
+             xmlns:int="http://www.springframework.org/schema/integration"
+             xmlns:int-jdbc="http://www.springframework.org/schema/integration/jdbc"
+             xsi:schemaLocation="http://www.springframework.org/schema/beans https://www.springframework.org/schema/beans/spring-beans.xsd
+			http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+			http://www.springframework.org/schema/integration https://www.springframework.org/schema/integration/spring-integration.xsd
+            http://www.springframework.org/schema/integration/jdbc http://www.springframework.org/schema/integration/jdbc/spring-integration-jdbc.xsd">
+
+    <int:gateway id="asbMessageSender"
+                 service-interface="com.example.inbound.processing.endpoint.SenderGateway"
+                 default-request-channel="asbOutboundDeliveryChannel"/>
+
+    <int-jdbc:message-store id="messageStore" data-source="dataSource"/>
+    <int:channel id="asbOutboundDeliveryChannel">
+        <int:queue message-store="messageStore"/>
+    </int:channel>
+
+    <int:chain input-channel="asbOutboundDeliveryChannel">
+        <poller fixed-rate="1000"/>
+        <!-- TODO: here it's possible to do a batching as it might help to optimise data volume transfered to ASB -->
+        <int:service-activator id="asbOutboundSender"
+                               ref="serviceBusMessageHandler"/>
+    </int:chain>
+
+    <beans:bean id="outboundQueue"
+                class="org.apache.qpid.jms.JmsQueue">
+        <beans:constructor-arg>
+            <beans:value>orders</beans:value>
+        </beans:constructor-arg>
+    </beans:bean>
+
+</beans:beans>
