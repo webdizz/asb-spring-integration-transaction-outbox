@@ -8,9 +8,15 @@
           lazy-init="false"
           class="org.apache.qpid.jms.JmsConnectionFactory">
         <property name="remoteURI" value="amqp://0.0.0.0:5672"/>
-<!--        <property name="username" value="sfs-asb-user"/>-->
-<!--        <property name="password" value="LbQYpYI6hO855VCmeFrL7FY8whYpDkP8fdPrlZ7yryA="/>-->
-<!--        <property name="remoteURI" value="amqps://sfs-asb-standard.servicebus.windows.net"/>-->
+        <property name="clientIDPrefix" value="SFS-"/>
+    </bean>
+
+    <bean id="asbConnectionFactory"
+          lazy-init="false"
+          class="org.apache.qpid.jms.JmsConnectionFactory">
+        <property name="username" value="sfs-asb-user"/>
+        <property name="password" value="LbQYpYI6hO855VCmeFrL7FY8whYpDkP8fdPrlZ7yryA="/>
+        <property name="remoteURI" value="amqps://sfs-asb-standard.servicebus.windows.net"/>
         <property name="clientIDPrefix" value="SFS-"/>
     </bean>
 
