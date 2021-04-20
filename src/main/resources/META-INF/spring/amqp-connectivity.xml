@@ -4,14 +4,14 @@
        xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans.xsd
 ">
 
-    <bean id="connectionFactory"
+    <bean id="amqpConnectionFactory"
           lazy-init="false"
           class="org.apache.qpid.jms.JmsConnectionFactory">
         <property name="remoteURI" value="amqp://0.0.0.0:5672"/>
         <property name="clientIDPrefix" value="SFS-"/>
     </bean>
 
-    <bean id="inboundQueue"
+    <bean id="amqpInboundQueue"
           class="org.apache.qpid.jms.JmsQueue">
         <constructor-arg value="orders"/>
     </bean>

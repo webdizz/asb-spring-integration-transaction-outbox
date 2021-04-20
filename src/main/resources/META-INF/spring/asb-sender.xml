@@ -13,13 +13,13 @@
                  service-interface="com.example.inbound.processing.endpoint.SenderGateway"
                  default-request-channel="asbOutboundDeliveryChannel"/>
 
-    <int-jdbc:message-store id="messageStore" data-source="dataSource"/>
+    <int-jdbc:message-store id="asbMessageStore" data-source="dataSource"/>
     <int:channel id="asbOutboundDeliveryChannel">
-        <int:queue message-store="messageStore"/>
+        <int:queue message-store="asbMessageStore"/>
     </int:channel>
 
     <int:chain input-channel="asbOutboundDeliveryChannel">
-        <poller fixed-rate="1000"/>
+        <poller fixed-rate="1000" />
         <!-- TODO: here it's possible to do a batching as it might help to optimise data volume transferred to ASB -->
         <int:service-activator id="asbOutboundSender"
                                ref="serviceBusMessageHandler"/>

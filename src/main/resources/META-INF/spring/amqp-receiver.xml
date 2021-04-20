@@ -16,9 +16,9 @@
 
     <int-jms:message-driven-channel-adapter id="inboundMessageChannelAdapter"
                                             channel="inbound"
-                                            destination="inboundQueue"
+                                            destination="amqpInboundQueue"
                                             pub-sub-domain="false"
-                                            connection-factory="connectionFactory"
+                                            connection-factory="amqpConnectionFactory"
                                             concurrent-consumers="1"
                                             idle-task-execution-limit="3"
                                             acknowledge="auto"
@@ -31,14 +31,13 @@
         <int:service-activator ref="messageTracer" method="printMetaData"/>
     </int:chain>
 
-
     <int:channel id="inbound2"/>
 
     <int-jms:message-driven-channel-adapter id="inboundMessageChannelAdapter2"
                                             channel="inbound2"
-                                            destination="inboundQueue"
+                                            destination="amqpInboundQueue"
                                             pub-sub-domain="false"
-                                            connection-factory="connectionFactory"
+                                            connection-factory="amqpConnectionFactory"
                                             concurrent-consumers="1"
                                             idle-task-execution-limit="3"
                                             acknowledge="auto"

@@ -2,7 +2,6 @@ package com.example.inbound.processing.endpoint;
 
 import com.azure.core.util.IterableStream;
 import com.azure.messaging.servicebus.ServiceBusReceivedMessage;
-import com.azure.messaging.servicebus.ServiceBusSenderClient;
 import com.azure.messaging.servicebus.ServiceBusSessionReceiverClient;
 import com.example.inbound.processing.domain.BusinessMessage;
 import lombok.extern.slf4j.Slf4j;
@@ -29,40 +28,53 @@ public class MessageSendingResource {
     private Destination destination;
 
     @Autowired
-    private ServiceBusSenderClient serviceBusSenderClient;
-
-    @Autowired
     private ServiceBusSessionReceiverClient serviceBusReceiverClient;
 
     @Autowired
-    private SenderGateway gateway;
+    @Qualifier("asbMessageSender")
+    private SenderGateway asbMessageSender;
 
-    public MessageSendingResource(@Qualifier("connectionFactory") JmsConnectionFactory jmsConnectionFactory, @Qualifier("inboundQueue") Destination destination) {
+    @Autowired
+    @Qualifier("amqpMessageSender")
+    private SenderGateway amqpMessageSender;
+
+    public MessageSendingResource(
+            @Qualifier("amqpConnectionFactory") JmsConnectionFactory jmsConnectionFactory,
+            @Qualifier("amqpInboundQueue") Destination destination) {
         this.jmsConnectionFactory = jmsConnectionFactory;
         this.destination = destination;
     }
 
-    @PostMapping("/send")
-    public String send(@RequestParam("s") String sessionId) {
-        String messageBody = UUID.randomUUID().toString();
-        BusinessMessage message = new BusinessMessage();
-        message.setBody(messageBody);
-        message.setSessionId(sessionId);
-        gateway.send(message);
+    @PostMapping("/asb/send")
+    public String sendViaASB(@RequestParam("s") String sessionId) {
+        BusinessMessage message = createMessage(sessionId);
+        asbMessageSender.send(message);
 
-//        ServiceBusMessage serviceBusMessage = new ServiceBusMessage(messageBody);
-//        serviceBusMessage.setSessionId(sessionId);
-//        serviceBusSenderClient.sendMessage(serviceBusMessage);
-
-        return "Message was sent: " + messageBody;
+        return "Message was sent: " + message.getBody();
     }
 
-    @GetMapping("/receive")
+    @PostMapping("/amq/send")
+    public String sendViaAMQP(@RequestParam("s") String sessionId) {
+        BusinessMessage message = createMessage(sessionId);
+        amqpMessageSender.send(message);
+
+        return "Message was sent: " + message.getBody();
+    }
+
+    @GetMapping("/asb/receive")
     public String receive(@RequestParam("s") String sessionId) {
         String messageBody = "None";
         IterableStream<ServiceBusReceivedMessage> receivedMessages = serviceBusReceiverClient.acceptSession(sessionId).receiveMessages(1);
         ServiceBusReceivedMessage receivedMessage = receivedMessages.stream().findFirst().get();
         return receivedMessage.getBody().toString();
+    }
+
+    private BusinessMessage createMessage(String sessionId) {
+        String messageBody = UUID.randomUUID().toString();
+        BusinessMessage message = new BusinessMessage();
+        message.setBody(messageBody);
+        message.setSessionId(sessionId);
+        return message;
     }
 
 }
