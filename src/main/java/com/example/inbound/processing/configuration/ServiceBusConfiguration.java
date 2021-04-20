@@ -9,21 +9,23 @@ import org.springframework.context.annotation.Configuration;
 @Configuration
 public class ServiceBusConfiguration {
 
+    public static final String ORDERS_QUEUE_NAME = "orders";
+
     @Bean
     public ServiceBusSenderClient serviceBusSenderClient() {
         return new ServiceBusClientBuilder()
                 .connectionString("Endpoint=sb://sfs-asb-standard.servicebus.windows.net/;SharedAccessKeyName=sfs-asb-user;SharedAccessKey=5ZYWkWvlgCB/nthTq/UnrtzLeOUdxEOw4p4m+/Kw+r0=")
                 .sender()
-                .queueName("orders")
+                .queueName(ORDERS_QUEUE_NAME)
                 .buildClient();
     }
 
     @Bean
-    public ServiceBusSessionReceiverClient serviceBusReceiverAsyncClient() {
+    public ServiceBusSessionReceiverClient serviceBusSessionReceiverClient() {
         return new ServiceBusClientBuilder()
                 .connectionString("Endpoint=sb://sfs-asb-standard.servicebus.windows.net/;SharedAccessKeyName=sfs-asb-user;SharedAccessKey=5ZYWkWvlgCB/nthTq/UnrtzLeOUdxEOw4p4m+/Kw+r0=")
                 .sessionReceiver()
-                .queueName("orders")
+                .queueName(ORDERS_QUEUE_NAME)
                 .buildClient();
     }
 

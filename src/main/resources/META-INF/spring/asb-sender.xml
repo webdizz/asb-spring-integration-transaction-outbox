@@ -20,16 +20,9 @@
 
     <int:chain input-channel="asbOutboundDeliveryChannel">
         <poller fixed-rate="1000"/>
-        <!-- TODO: here it's possible to do a batching as it might help to optimise data volume transfered to ASB -->
+        <!-- TODO: here it's possible to do a batching as it might help to optimise data volume transferred to ASB -->
         <int:service-activator id="asbOutboundSender"
                                ref="serviceBusMessageHandler"/>
     </int:chain>
-
-    <beans:bean id="outboundQueue"
-                class="org.apache.qpid.jms.JmsQueue">
-        <beans:constructor-arg>
-            <beans:value>orders</beans:value>
-        </beans:constructor-arg>
-    </beans:bean>
 
 </beans:beans>

@@ -20,7 +20,6 @@ public class ServiceBusMessageHandler implements MessageHandler {
 
     @Override
     public void handleMessage(org.springframework.messaging.Message<?> message) throws MessagingException {
-
         BusinessMessage businessMessage = (BusinessMessage) message.getPayload();
         ServiceBusMessage serviceBusMessage = new ServiceBusMessage(businessMessage.getBody());
         serviceBusMessage.setSessionId(businessMessage.getSessionId());

@@ -8,9 +8,9 @@ import org.springframework.integration.config.EnableIntegration;
 @SpringBootApplication
 @EnableIntegration
 @ImportResource({
-        "classpath:META-INF/spring/receiver.xml",
-        "classpath:META-INF/spring/connectivity.xml",
-        "classpath:META-INF/spring/sender.xml"
+        "classpath:META-INF/spring/amqp-connectivity.xml",
+        "classpath:META-INF/spring/amqp-receiver.xml",
+        "classpath:META-INF/spring/asb-sender.xml"
 })
 public class InboundProcessingApplication {
 
